@@ -53,83 +53,91 @@ def tfidf(word, doc, termCounts):
     lidf = log(idf)
     return tf * lidf
 
+fil =open("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\support\\Results\\Ours_2.txt", "w+")
+sys.stdout = fil
+
 dire = "E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\"
 textDir = os.listdir("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data")
-fi="E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\A1G.11.orig"
 termCounts, word_depths, word_heads  = countStats(textDir)
 
-
-#print(word_depths)
-count = 0
-compressed_sentences = []
-
-for parse in readParses(open(fi, encoding="utf-8")):
-    word_objects = {}
-    all_leaves = parse.leaves()
-    for leaf in all_leaves:
-        #print fi
-        (word, pos) = leaf
-        weight_tfidf = tfidf(word, fi, termCounts)
-        node = str(word + "-" + str(pos) + "-" +str(count))
-        depth_word = word_depths[fi][node]
-        #print leaf, weight_tfidf, depth_word
-        word_objects[node] = weight_tfidf - 0.4 * depth_word - 0.5
-    #print(all_leaves)
-    #print(word_objects)
+for fil in textDir:
+    if ".orig" not in fil:
+        continue
+    fi=dire + fil#fi="E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\A1G.11.orig"
+    #print(word_depths)
+    count = 0
+    compressed_sentences = []
     
-    problem = LpProblem("Sentence Compression 1", LpMaximize)
-    varTab = {}
-    for obj in word_objects:
-        varTab[obj] = LpVariable(obj, 0, 1, LpInteger)
-     
-    #the first line added to the problem is the objective
-    objective = []
-    for obj, wt in word_objects.items():
-        objective.append( (varTab[obj], wt) )
-    problem += LpAffineExpression(objective)
-    
-    constraint = []
-    for obj, wt in word_objects.items():
-        constraint.append( (varTab[obj], wt) )
-        head = word_heads[fi][obj]
-        #print(obj, head)
-        if "ROOT" not in head :
-            problem += varTab[head] >= varTab[obj]
-    problem += ( LpAffineExpression(constraint) >= 0)
-    
-    #solve the problem...
-    problem.solve()
-    
-    num_picked = 0
-    wt = 0
-    ours = ""
-    sentence = []
-    for varName, val in varTab.items():
-        #print ("Took", varName, "?", val.varValue)
-        if val.varValue:
-            objWt = word_objects[varName]
-            wt += objWt
-            num_picked += 1
-            ours += " "+varName
-            #print(varName)
-            word_pos, co =varName.rsplit("-", 1)
-            word, pos = word_pos.rsplit("-", 1)
-            sentence.append([int(pos), word])
-    sentence.sort()
-    #print(sentence)
-    c_sen = ""
-    for index, node in enumerate(sentence):
-        pos, word = node 
-        c_sen += " " + word
-    #print(c_sen)
-    compressed_sentences.append(c_sen)
-    #access information about the solution
-    #print("Total No of words present", len(termCounts[fi]))
-    #print ("Total No of words picked", num_picked)
-    
-    #check that this worked
-    print ("Problem status:", LpStatus[problem.status])
-    #print("\n\n\n")
-    count+=1
-    #break
-print(compressed_sentences)
+    for parse in readParses(open(fi, encoding="utf-8")):
+        word_objects = {}
+        all_leaves = parse.leaves()
+        for leaf in all_leaves:
+            #print fi
+            (word, pos) = leaf
+            weight_tfidf = tfidf(word, fi, termCounts)
+            node = str(word + "-" + str(pos) + "-" +str(count))
+            depth_word = word_depths[fi][node]
+            #print leaf, weight_tfidf, depth_word
+            word_objects[node] = weight_tfidf - 0.4 * depth_word - 0.5
+        #print(all_leaves)
+        #print(word_objects)
+        
+        problem = LpProblem("Sentence Compression 2", LpMaximize)
+        varTab = {}
+        for obj in word_objects:
+            varTab[obj] = LpVariable(obj, 0, 1, LpInteger)
+         
+        #the first line added to the problem is the objective
+        objective = []
+        for obj, wt in word_objects.items():
+            objective.append( (varTab[obj], wt) )
+        problem += LpAffineExpression(objective)
+        
+        constraint = []
+        for obj, wt in word_objects.items():
+            constraint.append( (varTab[obj], wt) )
+            head = word_heads[fi][obj]
+            #print(obj, head)
+            if "ROOT" not in head :
+                problem += varTab[head] >= varTab[obj]
+        problem += ( LpAffineExpression(constraint) >= 0)
+        
+        #solve the problem...
+        problem.solve()
+        
+        num_picked = 0
+        wt = 0
+        ours = ""
+        sentence = []
+        for varName, val in varTab.items():
+            #print ("Took", varName, "?", val.varValue)
+            if val.varValue:
+                objWt = word_objects[varName]
+                wt += objWt
+                num_picked += 1
+                ours += " "+varName
+                #print(varName)
+                word_pos, co =varName.rsplit("-", 1)
+                word, pos = word_pos.rsplit("-", 1)
+                sentence.append([int(pos), word])
+        sentence.sort()
+        #print(sentence)
+        c_sen = ""
+        for index, node in enumerate(sentence):
+            pos, word = node 
+            c_sen += " " + word
+        #print(c_sen)
+        compressed_sentences.append(c_sen)
+        #access information about the solution
+        #print("Total No of words present", len(termCounts[fi]))
+        #print ("Total No of words picked", num_picked)
+        
+        #check that this worked
+        #print ("Problem status:", LpStatus[problem.status])
+        #print("\n\n\n")
+        count+=1
+        #break
+    all_sentce = ""
+    for index, sentce in enumerate(compressed_sentences):
+        all_sentce += sentce
+    print(all_sentce)

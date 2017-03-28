@@ -51,6 +51,9 @@ def tfidf(word, doc, termCounts):
     lidf = log(idf)
     return tf * lidf
 
+fil =open("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\support\\Results\\Ours_1.txt", "w+")
+sys.stdout = fil
+
 dire = "E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\"
 textDir = os.listdir("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data")
 termCounts, word_depths = countStats(textDir)
@@ -60,7 +63,7 @@ for fil in textDir:
         continue
     fi=dire + fil#"E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\A1G.11.orig"
     
-    print(fi)
+    #print(fi)
     count = 0
     compressed_sentences = []
     
@@ -129,5 +132,8 @@ for fil in textDir:
         #print("\n\n\n")
         count+=1
         #break
-    print(compressed_sentences)
-    print("\n\n\n")
+    #print(compressed_sentences)
+    all_sentce = ""
+    for index, sentce in enumerate(compressed_sentences):
+        all_sentce += sentce
+    print(all_sentce)
