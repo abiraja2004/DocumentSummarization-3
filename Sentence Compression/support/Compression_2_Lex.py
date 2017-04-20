@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar 17 12:30:56 2017
+Created on Tue Mar 28 19:50:04 2017
 
 @author: Akshay
 """
@@ -23,8 +23,6 @@ def countStats(textDir):
     word_depths = defaultdict(lambda: defaultdict(int))
     word_heads = defaultdict(lambda: defaultdict(str))
     for fil in textDir:
-        if ".orig" not in fil:
-            continue
         #print(fil)
         ff = open(dire + fil, encoding="utf-8")
         count = 0
@@ -51,15 +49,23 @@ def tfidf(word, doc, termCounts):
     dcount = sum([1 for fi in termCounts if word in termCounts[fi]])
     idf = len(termCounts) / (1 + dcount)
     lidf = log(idf)
-    return tf * lidf
+    #return tf * lidf
+    return lidf
 
-dire = "E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\"
-textDir = os.listdir("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data")
+dire = "E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\Text\\"
+textDir = os.listdir("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\Text")
 termCounts, word_depths, word_heads  = countStats(textDir)
 
+s_pred_out_file = open("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\support\\Results\\Lex_Compressed_2.txt", "w+")
+
+num = []
 for fil in textDir:
-    if ".orig" not in fil:
-        continue
+    num.append(int(fil))
+    
+num.sort()
+
+for fil in num:
+    fil = str(fil)
     fi=dire + fil#fi="E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\A1G.11.orig"
     #print(word_depths)
     count = 0
@@ -75,7 +81,7 @@ for fil in textDir:
             node = str(word + "-" + str(pos) + "-" +str(count))
             depth_word = word_depths[fi][node]
             #print leaf, weight_tfidf, depth_word
-            word_objects[node] = weight_tfidf - 0.4 * depth_word - 0.5
+            word_objects[node] = weight_tfidf - 0.4 * depth_word + 0.5
         #print(all_leaves)
         #print(word_objects)
         
@@ -133,41 +139,14 @@ for fil in textDir:
         #print("\n\n\n")
         count+=1
         #break
-    s_out_file = open("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\support\\Results\\" + fil + ".check_2", "w+")
-    ind = 0
-    for parse in readParses(open(fi)):
-        if ind == 0:
-            s_out_file.write("Orig: ")
-        else:
-            words = parse.leaves()
-            sorted(words)
-            s_out_file.write(" ".join([word for (word, pos) in words]))
-        ind += 1
-    
-    fil_name = fil.split(".")
-    fil_name_new = ""
-    for index, fil_1 in enumerate(fil_name):
-        if index == len(fil_name) - 1:
-            fil_name_new += "comp"
-        else:
-            fil_name_new += fil_1 + "."
-    
-    ind = 0
-    for parse in readParses(open(dire + fil_name_new)):
-        if ind == 0:
-            s_out_file.write("\nHuman: ")
-        else:
-            words = parse.leaves()
-            sorted(words)
-            s_out_file.write(" ".join([word for (word, pos) in words]))
-        ind += 1
-    
     all_sentce = ""
     for index, sentce in enumerate(compressed_sentences):
-        all_sentce += sentce
-        
-    s_out_file.write("\nOurs:" + all_sentce)
+        if sentce != '':
+            all_sentce += sentce+ "."
     
-    s_out_file.close()
-    #break
     #print(all_sentce)
+    s_pred_out_file.write(all_sentce)
+    s_pred_out_file.write("\n")
+    
+s_pred_out_file.close()
+    

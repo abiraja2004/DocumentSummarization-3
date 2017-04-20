@@ -56,9 +56,6 @@ def tfidf(word, doc, termCounts):
     lidf = log(idf)
     return tf * lidf
 
-fil =open("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\support\\Results\\Ours_3.txt", "w+")
-sys.stdout = fil
-
 keep_dependency_archs = {'aux', 'neg', 'conjunct', 'preconj', 'nsubj'}
 
 dire = "E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\data\\"
@@ -151,7 +148,39 @@ for fil in textDir:
         #print("\n\n\n")
         count+=1
         #break
+    s_out_file = open("E:\\SP 17\\5525 SLP\\Project\\Sentence Compression\\support\\Results\\" + fil + ".check_3", "w+")
+    ind = 0
+    for parse in readParses(open(fi)):
+        if ind == 0:
+            s_out_file.write("Orig: ")
+        else:
+            words = parse.leaves()
+            sorted(words)
+            s_out_file.write(" ".join([word for (word, pos) in words]))
+        ind += 1
+    
+    fil_name = fil.split(".")
+    fil_name_new = ""
+    for index, fil_1 in enumerate(fil_name):
+        if index == len(fil_name) - 1:
+            fil_name_new += "comp"
+        else:
+            fil_name_new += fil_1 + "."
+    
+    ind = 0
+    for parse in readParses(open(dire + fil_name_new)):
+        if ind == 0:
+            s_out_file.write("\nHuman: ")
+        else:
+            words = parse.leaves()
+            sorted(words)
+            s_out_file.write(" ".join([word for (word, pos) in words]))
+        ind += 1    
+    
     all_sentce = ""
     for index, sentce in enumerate(compressed_sentences):
         all_sentce += sentce
-    print(all_sentce)
+        
+    s_out_file.write("\nOurs:" + all_sentce)
+    
+    s_out_file.close()
