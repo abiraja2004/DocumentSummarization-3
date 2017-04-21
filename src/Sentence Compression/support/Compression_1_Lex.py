@@ -86,7 +86,7 @@ for fil in num:
             #Strong weight_tfidf - 0.1 * depth_word + 0.5
             #Stronger weight_tfidf - 0.1 * depth_word - 0.5
             #Strongest weight_tfidf - 0.4 * depth_word + 0.5
-            word_objects[node] = weight_tfidf - 0.4 * depth_word - 0.5
+            word_objects[node] = weight_tfidf - 0.4 * depth_word + 0.5
         
         problem = LpProblem("Sentence Compression 1", LpMaximize)
         varTab = {}
