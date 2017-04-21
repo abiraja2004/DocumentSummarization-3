@@ -85,7 +85,7 @@ for fil in num:
             node = str(word + "-" + str(pos) + "-" +str(count))
             depth_word = word_depths[fi][node]
             #print leaf, weight_tfidf, depth_word
-            word_objects[node] = weight_tfidf - 0.4 * depth_word + 0.5
+            word_objects[node] = weight_tfidf - 0.4 * depth_word - 0.5
         #print(all_leaves)
         #print(word_objects)
         

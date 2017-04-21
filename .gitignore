@@ -1,3 +1,5 @@
 .idea/
 Sentence Compression/support/__pycache__/depParse.cpython-35.pyc
 Sentence Compression/support/__pycache__/depParse.cpython-35.pyc
+src/Sentence Compression/support/__pycache__/depParse.cpython-35.pyc
+*.pyc
